@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useStore } from '../state/store';
 import { PASTELS, fmtM2, objectArea, polylineLength, fmtM } from '../model/types';
 import { LIB_MAP, LINE_STYLES } from '../model/library';
@@ -13,7 +14,6 @@ export function PropertiesPanel() {
   const lib = LIB_MAP[o.type];
   const isLine = o.kind === 'line';
   const isPoly = o.kind === 'polygon';
-  const num = (v: string) => Math.max(0.1, parseFloat(v) || 0.1);
 
   return (
     <div className="props">
@@ -33,13 +33,13 @@ export function PropertiesPanel() {
       {!isLine && !isPoly && (
         <div className="props-row">
           <label>{o.kind === 'circle' || o.kind === 'symbol' ? 'Diameter (m)' : 'Width (m)'}
-            <input type="number" step={0.1} min={0.1} value={round2(o.w)}
-              onChange={e => updateObject(o.id, o.kind === 'circle' || o.kind === 'symbol' ? { w: num(e.target.value), h: num(e.target.value) } : { w: num(e.target.value) })} />
+            <NumField key={`w-${o.id}`} value={round2(o.w)} min={0.1}
+              onCommit={v => updateObject(o.id, o.kind === 'circle' || o.kind === 'symbol' ? { w: v, h: v } : { w: v })} />
           </label>
           {o.kind !== 'circle' && o.kind !== 'symbol' && (
             <label>Depth (m)
-              <input type="number" step={0.1} min={0.1} value={round2(o.h)}
-                onChange={e => updateObject(o.id, { h: num(e.target.value) })} />
+              <NumField key={`h-${o.id}`} value={round2(o.h)} min={0.1}
+                onCommit={v => updateObject(o.id, { h: v })} />
             </label>
           )}
         </div>
@@ -47,22 +47,22 @@ export function PropertiesPanel() {
 
       {!isLine && !isPoly && (
         <label>Rotation (°)
-          <input type="number" step={5} value={Math.round(o.rotation)}
-            onChange={e => updateObject(o.id, { rotation: parseFloat(e.target.value) || 0 })} />
+          <NumField key={`r-${o.id}`} value={Math.round(o.rotation)} step={5}
+            onCommit={v => updateObject(o.id, { rotation: v })} />
         </label>
       )}
 
       {o.type === 'wall' && (
         <label>Wall height (m)
-          <input type="number" step={0.1} min={0} value={o.wallHeight ?? 1}
-            onChange={e => updateObject(o.id, { wallHeight: parseFloat(e.target.value) || 0 })} />
+          <NumField key={`wh-${o.id}`} value={o.wallHeight ?? 1} min={0}
+            onCommit={v => updateObject(o.id, { wallHeight: v })} />
         </label>
       )}
 
       {o.kind === 'steps' && (
         <label>Treads
-          <input type="number" step={1} min={2} max={20} value={o.treads ?? 4}
-            onChange={e => updateObject(o.id, { treads: Math.max(2, parseInt(e.target.value) || 4) })} />
+          <NumField key={`t-${o.id}`} value={o.treads ?? 4} step={1} min={2} integer
+            onCommit={v => updateObject(o.id, { treads: Math.min(20, Math.max(2, Math.round(v))) })} />
         </label>
       )}
 
@@ -94,3 +94,36 @@ export function PropertiesPanel() {
 }
 
 const round2 = (v: number) => Math.round(v * 100) / 100;
+
+// Number input that lets you clear the field and type freely; the value is
+// applied only when the text parses, and snaps back to the real value on blur.
+function NumField({ value, onCommit, min, step = 0.1, integer = false }: {
+  value: number;
+  onCommit: (v: number) => void;
+  min?: number;
+  step?: number;
+  integer?: boolean;
+}) {
+  const [text, setText] = useState(String(value));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) setText(String(value));
+  }, [value, focused]);
+
+  const tryCommit = (raw: string) => {
+    const v = integer ? parseInt(raw) : parseFloat(raw);
+    if (!Number.isFinite(v)) return;
+    if (min != null && v < min) return;
+    onCommit(v);
+  };
+
+  return (
+    <input type="number" step={step} min={min} value={text}
+      onFocus={() => setFocused(true)}
+      onBlur={() => { setFocused(false); setText(String(value)); }}
+      onChange={e => { setText(e.target.value); tryCommit(e.target.value); }}
+      onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+    />
+  );
+}
