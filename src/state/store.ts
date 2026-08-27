@@ -125,8 +125,8 @@ export const useStore = create<AppState>()((set, get) => ({
   snapVal: v => {
     const { snap, design } = get();
     if (!snap || !design) return v;
-    const g = design.gridSizeM;
-    return Math.round(v / g) * g;
+    const g = design.snapStepM ?? 0.1;
+    return Math.round((Math.round(v / g) * g) * 1000) / 1000;
   },
 }));
 

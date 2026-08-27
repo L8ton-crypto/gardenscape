@@ -216,7 +216,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
       if (!st.selectedId || st.viewOnly) return;
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') { e.preventDefault(); st.duplicateObject(st.selectedId); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { st.removeObject(st.selectedId); return; }
-      const g = st.design?.gridSizeM ?? 0.5;
+      const g = st.design?.snapStepM ?? 0.1;
       const o = st.design?.objects.find(o => o.id === st.selectedId);
       if (!o) return;
       const mv = (dx: number, dy: number) => {

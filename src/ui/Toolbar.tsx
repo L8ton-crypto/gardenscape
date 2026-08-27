@@ -100,11 +100,18 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
                 <button onClick={e => { e.stopPropagation(); toggleLayer('hard'); }}>{showLayers.hard ? '☑' : '☐'} Hard landscaping</button>
                 <button onClick={e => { e.stopPropagation(); toggleLayer('utilities'); }}>{showLayers.utilities ? '☑' : '☐'} Utilities</button>
                 <div className="menu-sep" />
-                <div className="menu-label">Grid: {design.gridSizeM}m</div>
+                <div className="menu-label">Grid lines: {design.gridSizeM}m</div>
                 <div className="menu-grid-opts">
                   {[0.1, 0.25, 0.5, 1].map(g => (
                     <button key={g} className={design.gridSizeM === g ? 'active' : ''}
                       onClick={e => { e.stopPropagation(); commit(d => { d.gridSizeM = g; }); }}>{g}m</button>
+                  ))}
+                </div>
+                <div className="menu-label">Snap step: {design.snapStepM ?? 0.1}m</div>
+                <div className="menu-grid-opts">
+                  {[0.05, 0.1, 0.25, 0.5].map(g => (
+                    <button key={g} className={(design.snapStepM ?? 0.1) === g ? 'active' : ''}
+                      onClick={e => { e.stopPropagation(); commit(d => { d.snapStepM = g; }); }}>{g}m</button>
                   ))}
                 </div>
                 <div className="menu-label">North: {design.northDeg}°</div>

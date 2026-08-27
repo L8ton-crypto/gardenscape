@@ -26,6 +26,7 @@ export interface Design {
   widthM: number;
   heightM: number;
   gridSizeM: number;
+  snapStepM?: number;    // snap precision, independent of the visual grid (default 0.1)
   boundary: number[];    // polygon, flat coords; defaults to the plot rectangle
   northDeg: number;      // north arrow rotation
   objects: GardenObject[];
@@ -67,6 +68,7 @@ export function newDesign(name: string, widthM: number, heightM: number): Design
     widthM,
     heightM,
     gridSizeM: 0.5,
+    snapStepM: 0.1,
     boundary: [0, 0, widthM, 0, widthM, heightM, 0, heightM],
     northDeg: 0,
     objects: [],
