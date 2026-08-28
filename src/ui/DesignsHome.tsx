@@ -24,7 +24,7 @@ const TEMPLATES: { name: string; desc: string; make: () => Design }[] = [
       d.objects = [
         { id: uid(), type: 'patio', kind: 'rect', x: 3, y: 2.5, w: 6, h: 5, rotation: 0, label: 'Paving' },
         { id: uid(), type: 'raised-bed', kind: 'rect', x: 3, y: 0.5, w: 5, h: 0.8, rotation: 0 },
-        { id: uid(), type: 'table', kind: 'circle', x: 3, y: 3, w: 1.8, h: 1.8, rotation: 0 },
+        { id: uid(), type: 'table', kind: 'ellipse', x: 3, y: 3, w: 1.8, h: 1.8, rotation: 0 },
         { id: uid(), type: 'pot', kind: 'circle', x: 0.5, y: 4.5, w: 0.5, h: 0.5, rotation: 0 },
         { id: uid(), type: 'pot', kind: 'circle', x: 5.5, y: 4.5, w: 0.5, h: 0.5, rotation: 0 },
       ];

@@ -1,6 +1,6 @@
 // All dimensions in metres. World coords: 1 unit = 1 m; Stage scale converts to px.
 
-export type ObjectKind = 'rect' | 'circle' | 'line' | 'polygon' | 'symbol' | 'steps';
+export type ObjectKind = 'rect' | 'circle' | 'ellipse' | 'line' | 'polygon' | 'symbol' | 'steps';
 
 export interface GardenObject {
   id: string;
@@ -98,6 +98,7 @@ export function polylineLength(pts: number[]): number {
 export function objectArea(o: GardenObject): number {
   if (o.kind === 'rect' || o.kind === 'steps') return o.w * o.h;
   if (o.kind === 'circle') return Math.PI * (o.w / 2) ** 2;
+  if (o.kind === 'ellipse') return Math.PI * (o.w / 2) * (o.h / 2);
   if (o.kind === 'polygon' && o.points) return polygonArea(o.points);
   return 0;
 }

@@ -1,4 +1,4 @@
-import { Group, Rect, Circle, Line, Text } from 'react-konva';
+import { Group, Rect, Circle, Ellipse, Line, Text } from 'react-konva';
 import type Konva from 'konva';
 import type { GardenObject } from '../model/types';
 import { fmtM } from '../model/types';
@@ -24,7 +24,7 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
   };
 
   const labelText = o.label ?? lib?.name ?? '';
-  const showLabel = !!labelText && (o.kind === 'rect' || o.kind === 'polygon' || o.kind === 'circle') && Math.max(o.w, o.h) >= 0.8;
+  const showLabel = !!labelText && (o.kind === 'rect' || o.kind === 'polygon' || o.kind === 'circle' || o.kind === 'ellipse') && Math.max(o.w, o.h) >= 0.8;
   const levelText = o.level != null ? `${o.level >= 0 ? '+' : ''}${o.level.toFixed(2)}` : null;
 
   if (o.kind === 'line' || o.kind === 'polygon') {
@@ -63,6 +63,8 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
     <Group ref={nodeRef as never} x={o.x} y={o.y} rotation={o.rotation} {...common}>
       {o.kind === 'circle' || (o.kind === 'symbol') ? (
         <Circle radius={o.w / 2} fill={fill} stroke={selected ? '#1f6feb' : stroke} strokeWidth={selected ? 0.08 : 0.04} />
+      ) : o.kind === 'ellipse' ? (
+        <Ellipse radiusX={o.w / 2} radiusY={o.h / 2} fill={fill} stroke={selected ? '#1f6feb' : stroke} strokeWidth={selected ? 0.08 : 0.04} />
       ) : (
         <Rect x={-o.w / 2} y={-o.h / 2} width={o.w} height={o.h} cornerRadius={0.05}
           fill={fill} stroke={selected ? '#1f6feb' : stroke} strokeWidth={selected ? 0.08 : 0.04} />

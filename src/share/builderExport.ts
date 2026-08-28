@@ -141,6 +141,8 @@ function drawObject(layer: Konva.Layer, o: GardenObject, ox: number, oy: number,
   const g = new Konva.Group({ x: ox + px(o.x), y: oy + px(o.y), rotation: o.rotation });
   if (o.kind === 'circle' || o.kind === 'symbol') {
     g.add(new Konva.Circle({ radius: px(o.w / 2), fill: o.kind === 'symbol' ? '#fff' : '#f5f5f5', stroke: '#555', strokeWidth: 1.5 }));
+  } else if (o.kind === 'ellipse') {
+    g.add(new Konva.Ellipse({ radiusX: px(o.w / 2), radiusY: px(o.h / 2), fill: '#f5f5f5', stroke: '#555', strokeWidth: 1.5 }));
   } else {
     g.add(new Konva.Rect({ x: -px(o.w / 2), y: -px(o.h / 2), width: px(o.w), height: px(o.h), fill: lib?.hatch ? '#e8e8e8' : '#f5f5f5', stroke: lib?.hatch ? '#222' : '#555', strokeWidth: lib?.hatch ? 2 : 1.5 }));
     if (lib?.hatch) {

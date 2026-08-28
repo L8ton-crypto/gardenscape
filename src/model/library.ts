@@ -42,7 +42,8 @@ export const LIBRARY: LibraryItem[] = [
   // features
   { type: 'pond',       name: 'Pond',        kind: 'circle', category: 'features', w: 2,   h: 2,   fill: '#a9cfe0', stroke: '#5f93ab', emoji: '💧' },
   { type: 'water-feature', name: 'Water feature', kind: 'circle', category: 'features', w: 0.9, h: 0.9, fill: '#bcd9ea', stroke: '#5f93ab', emoji: '⛲' },
-  { type: 'table',      name: 'Table & chairs', kind: 'circle', category: 'features', w: 1.8, h: 1.8, fill: '#e0d6c4', stroke: '#9c8f74', emoji: '🪑' },
+  { type: 'table',      name: 'Table & chairs', kind: 'ellipse', category: 'features', w: 1.8, h: 1.8, fill: '#e0d6c4', stroke: '#9c8f74', emoji: '🪑' },
+  { type: 'table-rect', name: 'Table (square)', kind: 'rect', category: 'features', w: 1.5, h: 1.5, fill: '#e0d6c4', stroke: '#9c8f74', emoji: '🟫' },
   { type: 'bbq',        name: 'BBQ',         kind: 'rect', category: 'features', w: 0.7, h: 0.5, fill: '#9b9b9b', stroke: '#5c5c5c', emoji: '🍖' },
   { type: 'trampoline', name: 'Trampoline',  kind: 'circle', category: 'features', w: 3,   h: 3,   fill: '#9fb6c9', stroke: '#5a7386', emoji: '🤸' },
   { type: 'bench',      name: 'Bench',       kind: 'rect', category: 'features', w: 1.5, h: 0.5, fill: '#c9a877', stroke: '#8d7047', emoji: '🛋️' },
