@@ -10,6 +10,7 @@ interface AppState {
   lineType: LineType;
   selectedId: string | null;
   snap: boolean;
+  showDims: boolean;
   showLayers: { planting: boolean; hard: boolean; utilities: boolean };
   draftPoints: number[];        // in-progress polygon/line, world coords
   measure: number[] | null;     // [x1,y1,x2,y2] while measuring
@@ -21,6 +22,7 @@ interface AppState {
   setLineType: (t: LineType) => void;
   select: (id: string | null) => void;
   setSnap: (v: boolean) => void;
+  toggleDims: () => void;
   toggleLayer: (k: keyof AppState['showLayers']) => void;
   setDraftPoints: (pts: number[]) => void;
   setMeasure: (m: number[] | null) => void;
@@ -50,6 +52,7 @@ export const useStore = create<AppState>()((set, get) => ({
   lineType: 'fence',
   selectedId: null,
   snap: true,
+  showDims: false,
   showLayers: { planting: true, hard: true, utilities: true },
   draftPoints: [],
   measure: null,
@@ -61,6 +64,7 @@ export const useStore = create<AppState>()((set, get) => ({
   setLineType: t => set({ lineType: t }),
   select: id => set({ selectedId: id }),
   setSnap: v => set({ snap: v }),
+  toggleDims: () => set(s => ({ showDims: !s.showDims })),
   toggleLayer: k => set(s => ({ showLayers: { ...s.showLayers, [k]: !s.showLayers[k] } })),
   setDraftPoints: pts => set({ draftPoints: pts }),
   setMeasure: m => set({ measure: m }),
@@ -124,8 +128,9 @@ export const useStore = create<AppState>()((set, get) => ({
 
   snapVal: v => {
     const { snap, design } = get();
-    if (!snap || !design) return v;
-    const g = design.snapStepM ?? 0.1;
+    if (!design) return v;
+    // magnet ON → align to the visible grid; OFF → still round to the fine step
+    const g = snap ? design.gridSizeM : (design.snapStepM ?? 0.1);
     return Math.round((Math.round(v / g) * g) * 1000) / 1000;
   },
 }));

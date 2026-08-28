@@ -3,6 +3,7 @@ import { Stage, Layer, Rect, Line, Circle, Text, Transformer, Group } from 'reac
 import Konva from 'konva';
 import { useStore } from '../state/store';
 import { GridLayer } from './GridLayer';
+import { DimsOverlay } from './DimsOverlay';
 import { ObjectNode } from './ObjectNode';
 import { LIB_MAP } from '../model/library';
 import { fmtM } from '../model/types';
@@ -17,6 +18,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
   const lineType = useStore(s => s.lineType);
   const selectedId = useStore(s => s.selectedId);
   const showLayers = useStore(s => s.showLayers);
+  const showDims = useStore(s => s.showDims);
   const draftPoints = useStore(s => s.draftPoints);
   const measure = useStore(s => s.measure);
   const { select, setTool, setDraftPoints, setMeasure, addObject, updateObject, commit, snapVal } = useStore.getState();
@@ -152,10 +154,13 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
       drawStart.current = { x: wx, y: wy };
       setDraftRect({ x: wx, y: wy, w: 0, h: 0 });
     } else if (tool === 'polygon' || tool === 'line') {
-      setDraftPoints([...draftPoints, wx, wy]);
+      // read fresh state — stale closures here dropped every point but the last
+      const cur = useStore.getState().draftPoints;
+      setDraftPoints([...cur, wx, wy]);
     } else if (tool === 'measure') {
-      if (!measure || measure.length === 4) setMeasure([w.x, w.y, w.x, w.y]);
-      else setMeasure([measure[0], measure[1], w.x, w.y]);
+      const m = useStore.getState().measure;
+      if (!m || m.length === 4) setMeasure([w.x, w.y, w.x, w.y]);
+      else setMeasure([m[0], m[1], w.x, w.y]);
     }
   };
 
@@ -189,12 +194,19 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
   };
 
   const finishDraft = () => {
-    if (tool === 'polygon' && draftPoints.length >= 6) {
-      const id = addObject({ type: 'custom-poly', kind: 'polygon', x: 0, y: 0, w: 0, h: 0, rotation: 0, points: draftPoints, label: 'Area', color: '#bfe3d0' });
+    // drop consecutive duplicate points (double-click/tap to finish adds repeats)
+    const raw = useStore.getState().draftPoints;
+    const pts: number[] = [];
+    for (let i = 0; i < raw.length; i += 2) {
+      const n = pts.length;
+      if (n === 0 || Math.hypot(raw[i] - pts[n - 2], raw[i + 1] - pts[n - 1]) > 0.05) pts.push(raw[i], raw[i + 1]);
+    }
+    if (tool === 'polygon' && pts.length >= 6) {
+      const id = addObject({ type: 'custom-poly', kind: 'polygon', x: 0, y: 0, w: 0, h: 0, rotation: 0, points: pts, label: 'Area', color: '#bfe3d0' });
       select(id);
     }
-    if (tool === 'line' && draftPoints.length >= 4) {
-      const id = addObject({ type: lineType, kind: 'line', x: 0, y: 0, w: 0, h: 0, rotation: 0, points: draftPoints, wallHeight: lineType === 'wall' ? 1.0 : undefined });
+    if (tool === 'line' && pts.length >= 4) {
+      const id = addObject({ type: lineType, kind: 'line', x: 0, y: 0, w: 0, h: 0, rotation: 0, points: pts, wallHeight: lineType === 'wall' ? 1.0 : undefined });
       select(id);
     }
     setDraftPoints([]);
@@ -202,7 +214,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
   };
 
   // dbl-click / dbl-tap finishes polygon or line
-  const onDblClick = () => { if ((tool === 'polygon' || tool === 'line') && draftPoints.length) finishDraft(); };
+  const onDblClick = () => { if ((tool === 'polygon' || tool === 'line') && useStore.getState().draftPoints.length) finishDraft(); };
 
   // keyboard
   useEffect(() => {
@@ -330,6 +342,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
             nodeRef={n => { if (n) nodeMap.current.set(o.id, n); else nodeMap.current.delete(o.id); }}
           />
         ))}
+        {showDims && <DimsOverlay design={design} />}
         {/* draft rect */}
         {draftRect && <Rect x={draftRect.x} y={draftRect.y} width={draftRect.w} height={draftRect.h}
           fill="rgba(31,111,235,0.12)" stroke="#1f6feb" strokeWidth={0.04} dash={[0.2, 0.1]} listening={false} />}

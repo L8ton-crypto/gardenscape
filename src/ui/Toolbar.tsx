@@ -13,7 +13,8 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
   const canUndo = useStore(s => s.past.length > 0);
   const canRedo = useStore(s => s.future.length > 0);
   const showLayers = useStore(s => s.showLayers);
-  const { setTool, setSnap, undo, redo, commit, toggleLayer } = useStore.getState();
+  const showDims = useStore(s => s.showDims);
+  const { setTool, setSnap, undo, redo, commit, toggleLayer, toggleDims } = useStore.getState();
   const [toast, setToast] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -74,6 +75,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
           <button className={`tb-btn ${snap ? 'active' : ''}`} onClick={() => setSnap(!snap)} title="Snap to grid">🧲</button>
         </>
       )}
+      <button className={`tb-btn ${showDims ? 'active' : ''}`} onClick={toggleDims} title="Show all measurements">📐</button>
 
       <div className="tb-group">
         <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1.2 }))} title="Zoom in">＋</button>
@@ -107,7 +109,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
                       onClick={e => { e.stopPropagation(); commit(d => { d.gridSizeM = g; }); }}>{g}m</button>
                   ))}
                 </div>
-                <div className="menu-label">Snap step: {design.snapStepM ?? 0.1}m</div>
+                <div className="menu-label">Fine step (magnet off): {design.snapStepM ?? 0.1}m</div>
                 <div className="menu-grid-opts">
                   {[0.05, 0.1, 0.25, 0.5].map(g => (
                     <button key={g} className={(design.snapStepM ?? 0.1) === g ? 'active' : ''}
