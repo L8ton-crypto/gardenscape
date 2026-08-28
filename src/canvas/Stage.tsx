@@ -312,6 +312,52 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
     </>
   ) : null;
 
+  // vertex editing for a selected freeform polygon or line
+  const selObj = design.objects.find(o => o.id === selectedId);
+  const vertexHandles = (tool === 'select' && !viewOnly && selObj
+    && (selObj.kind === 'polygon' || selObj.kind === 'line') && selObj.points) ? (() => {
+    const pts = selObj.points!;
+    const nPts = pts.length / 2;
+    const isPoly = selObj.kind === 'polygon';
+    const minPts = isPoly ? 3 : 2;
+    const removeVertex = (i: number) => {
+      if (nPts > minPts) commit(d => {
+        const t = d.objects.find(o => o.id === selObj.id);
+        t?.points?.splice(i * 2, 2);
+      });
+    };
+    const segs = isPoly ? nPts : nPts - 1;
+    return (
+      <>
+        {Array.from({ length: segs }, (_, i) => {
+          const j = (i + 1) % nPts;
+          const mx = (pts[i * 2] + pts[j * 2]) / 2;
+          const my = (pts[i * 2 + 1] + pts[j * 2 + 1]) / 2;
+          const insert = () => commit(d => {
+            const t = d.objects.find(o => o.id === selObj.id);
+            t?.points?.splice(j * 2 === 0 ? t.points.length : j * 2, 0, mx, my);
+          });
+          return <Circle key={`vm${i}`} x={mx} y={my} radius={0.15} fill="#1f6feb" opacity={0.45}
+            onClick={insert} onTap={insert} />;
+        })}
+        {Array.from({ length: nPts }, (_, i) => (
+          <Circle key={`v${i}`} x={pts[i * 2]} y={pts[i * 2 + 1]} radius={0.2}
+            fill="#fff" stroke="#1f6feb" strokeWidth={0.06} draggable
+            onDragEnd={e => {
+              const nx = snapVal(e.target.x()), ny = snapVal(e.target.y());
+              commit(d => {
+                const t = d.objects.find(o => o.id === selObj.id);
+                if (t?.points) { t.points[i * 2] = nx; t.points[i * 2 + 1] = ny; }
+              });
+              e.target.position({ x: nx, y: ny });
+            }}
+            onDblClick={() => removeVertex(i)} onDblTap={() => removeVertex(i)}
+          />
+        ))}
+      </>
+    );
+  })() : null;
+
   const measureLen = measure ? Math.hypot(measure[2] - measure[0], measure[3] - measure[1]) : 0;
 
   return (
@@ -370,6 +416,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
           </Group>
         )}
         {boundaryHandles}
+        {vertexHandles}
         <Transformer ref={trRef} rotateEnabled keepRatio={false}
           anchorSize={14} anchorCornerRadius={7} borderStroke="#1f6feb" anchorStroke="#1f6feb"
           rotateAnchorOffset={30} onTransformEnd={onTransformEnd}

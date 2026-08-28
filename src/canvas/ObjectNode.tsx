@@ -24,7 +24,9 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
   };
 
   const labelText = o.label ?? lib?.name ?? '';
-  const showLabel = !!labelText && (o.kind === 'rect' || o.kind === 'polygon' || o.kind === 'circle' || o.kind === 'ellipse') && Math.max(o.w, o.h) >= 0.8;
+  const showLabel = !!labelText && (o.kind === 'polygon'
+    ? true // polygons have w/h of 0 — always show their label
+    : (o.kind === 'rect' || o.kind === 'circle' || o.kind === 'ellipse') && Math.max(o.w, o.h) >= 0.8);
   const levelText = o.level != null ? `${o.level >= 0 ? '+' : ''}${o.level.toFixed(2)}` : null;
 
   if (o.kind === 'line' || o.kind === 'polygon') {
