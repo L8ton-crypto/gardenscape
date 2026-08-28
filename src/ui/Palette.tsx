@@ -40,7 +40,9 @@ export function Palette() {
               onClick={() => { setLineType(key as LineType); setTool('line'); }}>
               <span className="pal-icon">{s.emoji}</span><span>{s.name}</span>
             </button>
-          ))
+          )).concat(tool === 'line'
+            ? [<div key="hint" className="hint">Tap the start point, tap the end — the run completes itself. Select it afterwards to add corners or a label.</div>]
+            : [])
         ) : cat === 'draw' ? (
           <>
             <button className={`pal-item ${tool === 'rect' ? 'active' : ''}`} onClick={() => setTool('rect')}>

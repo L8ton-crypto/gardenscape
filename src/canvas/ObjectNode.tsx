@@ -54,6 +54,9 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
             dash={style?.dash} lineCap="round" lineJoin="round"
             opacity={o.type === 'path' ? 0.75 : o.type === 'hedge' ? 0.85 : 1} hitStrokeWidth={0.5} />
         )}
+        {(o.kind === 'line' && o.label) && (
+          <Text x={cx - 3} y={cy - 0.5} width={6} align="center" text={o.label} fontSize={0.3} fontStyle="600" fill="#3d4a33" listening={false} />
+        )}
         {(o.kind === 'polygon' && showLabel) && (
           <Text x={cx - 3} y={cy - 0.16} width={6} align="center" text={labelText + (levelText ? `  ${levelText}` : '')} fontSize={0.32} fontStyle="600" fill="#3d4a33" listening={false} />
         )}

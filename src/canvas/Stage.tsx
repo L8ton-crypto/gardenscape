@@ -156,7 +156,11 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
     } else if (tool === 'polygon' || tool === 'line') {
       // read fresh state — stale closures here dropped every point but the last
       const cur = useStore.getState().draftPoints;
+      // a tap can fire both touch and compat mouse events — ignore the duplicate
+      if (cur.length >= 2 && Math.hypot(wx - cur[cur.length - 2], wy - cur[cur.length - 1]) < 0.02) return;
       setDraftPoints([...cur, wx, wy]);
+      // a line run is complete at its second point — no Enter/double-tap needed
+      if (tool === 'line' && cur.length >= 2) finishDraft();
     } else if (tool === 'measure') {
       const m = useStore.getState().measure;
       if (!m || m.length === 4) setMeasure([w.x, w.y, w.x, w.y]);
