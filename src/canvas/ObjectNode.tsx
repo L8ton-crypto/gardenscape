@@ -3,6 +3,7 @@ import type Konva from 'konva';
 import type { GardenObject } from '../model/types';
 import { fmtM } from '../model/types';
 import { LIB_MAP, LINE_STYLES } from '../model/library';
+import { useStore } from '../state/store';
 
 // Renders one garden object in world-metre coordinates.
 export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef }: {
@@ -14,8 +15,9 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
   nodeRef?: (n: Konva.Node | null) => void;
 }) {
   const lib = LIB_MAP[o.type];
-  const fill = o.color ?? lib?.fill ?? '#d3d3cb';
-  const stroke = lib?.stroke ?? '#777';
+  const sketch = useStore(s => s.sketchMode);
+  const fill = sketch ? (lib?.hatch ? '#ececec' : '#fafaf7') : (o.color ?? lib?.fill ?? '#d3d3cb');
+  const stroke = sketch ? '#555' : (lib?.stroke ?? '#777');
   const draggable = !viewOnly && !o.locked;
   const common = {
     onClick: onSelect, onTap: onSelect,
@@ -28,6 +30,23 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
     ? true // polygons have w/h of 0 — always show their label
     : (o.kind === 'rect' || o.kind === 'circle' || o.kind === 'ellipse') && Math.max(o.w, o.h) >= 0.8);
   const levelText = o.level != null ? `${o.level >= 0 ? '+' : ''}${o.level.toFixed(2)}` : null;
+
+  if (o.kind === 'note') {
+    const text = o.label || 'Double-tap panel to edit…';
+    const w = Math.min(4, Math.max(1.4, text.length * 0.15 + 0.5));
+    const lines = Math.ceil((text.length * 0.15) / (w - 0.4));
+    const h = 0.34 + lines * 0.34;
+    return (
+      <Group ref={nodeRef as never} x={o.x} y={o.y} rotation={o.rotation} {...common}>
+        <Rect x={-w / 2} y={-h / 2} width={w} height={h} cornerRadius={0.08}
+          fill={sketch ? '#fffef8' : '#fbf3c4'} stroke={selected ? '#1f6feb' : '#c9b458'} strokeWidth={selected ? 0.06 : 0.03}
+          shadowColor="#00000030" shadowBlur={0.08} shadowOffsetY={0.04} />
+        <Circle x={0} y={-h / 2} radius={0.09} fill="#c0392b" stroke="#fff" strokeWidth={0.025} />
+        <Text x={-w / 2 + 0.2} y={-h / 2 + 0.22} width={w - 0.4} text={text}
+          fontSize={0.28} fill="#5a4f23" lineHeight={1.25} listening={false} />
+      </Group>
+    );
+  }
 
   if (o.kind === 'line' || o.kind === 'polygon') {
     const pts = o.points ?? [];
@@ -50,7 +69,7 @@ export function ObjectNode({ o, selected, viewOnly, onSelect, onDragEnd, nodeRef
             <Line points={pts} stroke={selected ? '#1f6feb' : 'transparent'} strokeWidth={style.width + 0.06} opacity={0.4} />
           </>
         ) : (
-          <Line points={pts} stroke={selected ? '#1f6feb' : (style?.stroke ?? stroke)} strokeWidth={style?.width ?? 0.1}
+          <Line points={pts} stroke={selected ? '#1f6feb' : (sketch ? '#666' : (style?.stroke ?? stroke))} strokeWidth={style?.width ?? 0.1}
             dash={style?.dash} lineCap="round" lineJoin="round"
             opacity={o.type === 'path' ? 0.75 : o.type === 'hedge' ? 0.85 : 1} hitStrokeWidth={0.5} />
         )}

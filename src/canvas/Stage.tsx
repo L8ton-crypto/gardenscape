@@ -86,7 +86,7 @@ export function CanvasStage({ containerRef }: { containerRef: React.RefObject<HT
     if (!tr) return;
     const node = selectedId ? nodeMap.current.get(selectedId) : null;
     const o = design.objects.find(o => o.id === selectedId);
-    if (node && o && !viewOnly && o.kind !== 'line' && o.kind !== 'polygon' && o.kind !== 'symbol') {
+    if (node && o && !viewOnly && o.kind !== 'line' && o.kind !== 'polygon' && o.kind !== 'symbol' && o.kind !== 'note') {
       tr.nodes([node]);
     } else {
       tr.nodes([]);

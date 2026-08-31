@@ -1,8 +1,10 @@
 import { Group, Line, Rect, Text } from 'react-konva';
 import type { Design } from '../model/types';
+import { useStore } from '../state/store';
 
 // Paper, boundary, grid, edge rulers — all in world metres, non-interactive.
 export function GridLayer({ design }: { design: Design }) {
+  const sketch = useStore(s => s.sketchMode);
   const { widthM: W, heightM: H, gridSizeM: g, boundary } = design;
   const minor: number[][] = [];
   for (let x = 0; x <= W + 1e-9; x += g) minor.push([x, 0, x, H]);
@@ -17,19 +19,19 @@ export function GridLayer({ design }: { design: Design }) {
 
   return (
     <Group listening={false}>
-      <Rect x={-1.2} y={-1.2} width={W + 2.4} height={H + 2.4} fill="#efece4" cornerRadius={0.2}
+      <Rect x={-1.2} y={-1.2} width={W + 2.4} height={H + 2.4} fill={sketch ? '#ffffff' : '#efece4'} cornerRadius={0.2}
         shadowColor="#00000030" shadowBlur={0.4} shadowOffsetY={0.1} />
-      <Line points={boundary} closed fill="#f7f4ec" stroke="transparent" />
+      <Line points={boundary} closed fill={sketch ? '#ffffff' : '#f7f4ec'} stroke="transparent" />
       <Group clipFunc={ctx => {
         ctx.beginPath();
         ctx.moveTo(boundary[0], boundary[1]);
         for (let i = 2; i < boundary.length; i += 2) ctx.lineTo(boundary[i], boundary[i + 1]);
         ctx.closePath();
       }}>
-        {minor.map((p, i) => <Line key={`m${i}`} points={p} stroke="#ddd6c6" strokeWidth={0.012} />)}
-        {major.map((p, i) => <Line key={`M${i}`} points={p} stroke="#cfc6b0" strokeWidth={0.02} />)}
+        {minor.map((p, i) => <Line key={`m${i}`} points={p} stroke={sketch ? '#f0f0f0' : '#ddd6c6'} strokeWidth={0.012} />)}
+        {major.map((p, i) => <Line key={`M${i}`} points={p} stroke={sketch ? '#e0e0e0' : '#cfc6b0'} strokeWidth={0.02} />)}
       </Group>
-      <Line points={boundary} closed stroke="#4e5a42" strokeWidth={0.07} />
+      <Line points={boundary} closed stroke={sketch ? '#222' : '#4e5a42'} strokeWidth={0.07} />
       {labels}
       {/* scale bar */}
       <Group x={0} y={H + 0.55}>

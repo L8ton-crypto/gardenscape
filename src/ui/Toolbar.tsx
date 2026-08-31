@@ -4,6 +4,7 @@ import { encodeShareUrl } from '../share/encode';
 import { renderBuilderPlan } from '../share/builderExport';
 import { objectArea, polylineLength, fmtM2, fmtM } from '../model/types';
 import { LIB_MAP } from '../model/library';
+import { estimateMaterials } from '../model/materials';
 
 export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb: () => string | null }) {
   const design = useStore(s => s.design)!;
@@ -14,9 +15,11 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
   const canRedo = useStore(s => s.future.length > 0);
   const showLayers = useStore(s => s.showLayers);
   const showDims = useStore(s => s.showDims);
-  const { setTool, setSnap, undo, redo, commit, toggleLayer, toggleDims } = useStore.getState();
+  const sketchMode = useStore(s => s.sketchMode);
+  const { setTool, setSnap, undo, redo, commit, toggleLayer, toggleDims, toggleSketch } = useStore.getState();
   const [toast, setToast] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showMaterials, setShowMaterials] = useState(false);
 
   const flash = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 2200); };
 
@@ -76,6 +79,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
         </>
       )}
       <button className={`tb-btn ${showDims ? 'active' : ''}`} onClick={toggleDims} title="Show all measurements">📐</button>
+      <button className={`tb-btn ${sketchMode ? 'active' : ''}`} onClick={toggleSketch} title="Sketch view (schematic)">✏️</button>
 
       <div className="tb-group">
         <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1.2 }))} title="Zoom in">＋</button>
@@ -91,6 +95,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
         {menuOpen && (
           <div className="tb-menu" onClick={() => setMenuOpen(false)}>
             {!viewOnly && <button onClick={share}>🔗 Copy view-only link</button>}
+            <button onClick={() => setShowMaterials(true)}>🧮 Materials estimate</button>
             <button onClick={exportPng}>🖼 Export PNG</button>
             <button onClick={exportBuilder}>📐 Builder's plan (PNG)</button>
             {!viewOnly && <button onClick={exportJson}>💾 Export JSON backup</button>}
@@ -126,6 +131,38 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
         )}
       </div>
       {toast && <div className="toast">{toast}</div>}
+      {showMaterials && <MaterialsModal onClose={() => setShowMaterials(false)} />}
+    </div>
+  );
+}
+
+function MaterialsModal({ onClose }: { onClose: () => void }) {
+  const design = useStore(s => s.design)!;
+  const lines = estimateMaterials(design);
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <h3>🧮 Materials estimate</h3>
+          <button onClick={onClose}>✕</button>
+        </div>
+        {lines.length === 0 ? (
+          <p className="modal-empty">Nothing to estimate yet — add surfaces, fences, walls or beds to the plan.</p>
+        ) : (
+          <table className="mat-table">
+            <tbody>
+              {lines.map(l => (
+                <tr key={l.item}>
+                  <td className="mat-item">{l.item}</td>
+                  <td className="mat-qty">{l.qty}</td>
+                  <td className="mat-note">{l.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <p className="modal-foot">Rough take-off for budgeting — always confirm quantities with your supplier.</p>
+      </div>
     </div>
   );
 }

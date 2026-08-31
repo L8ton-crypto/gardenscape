@@ -58,7 +58,16 @@ export function renderBuilderPlan(design: Design): string {
   // objects
   const scheduled: { label: string; detail: string }[] = [];
   const sorted = [...design.objects].sort((a, b) => objectArea(b) - objectArea(a));
+  let noteN = 0;
   for (const o of sorted) {
+    if (o.kind === 'note') {
+      if (!o.label) continue;
+      noteN += 1;
+      layer.add(new Konva.Circle({ x: ox + px(o.x), y: oy + px(o.y), radius: 11, fill: '#fbf3c4', stroke: '#9c7c25', strokeWidth: 1.5 }));
+      layer.add(new Konva.Text({ x: ox + px(o.x) - 10, y: oy + px(o.y) - 6, width: 20, align: 'center', text: String(noteN), fontSize: 12, fontStyle: 'bold', fill: '#5a4f23' }));
+      scheduled.push({ label: `Note ${noteN}`, detail: o.label });
+      continue;
+    }
     drawObject(layer, o, ox, oy, S);
     const lib = LIB_MAP[o.type];
     const label = o.label || lib?.name || LINE_STYLES[o.type]?.name || 'Item';

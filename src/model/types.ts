@@ -1,6 +1,6 @@
 // All dimensions in metres. World coords: 1 unit = 1 m; Stage scale converts to px.
 
-export type ObjectKind = 'rect' | 'circle' | 'ellipse' | 'line' | 'polygon' | 'symbol' | 'steps';
+export type ObjectKind = 'rect' | 'circle' | 'ellipse' | 'line' | 'polygon' | 'symbol' | 'steps' | 'note';
 
 export interface GardenObject {
   id: string;

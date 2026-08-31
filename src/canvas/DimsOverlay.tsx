@@ -72,7 +72,7 @@ function ObjDim({ o }: { o: GardenObject }) {
     cx /= pts.length / 2; cy /= pts.length / 2;
     return <DimLabel x={cx} y={cy + 0.35} text={fmtM2(objectArea(o))} />;
   }
-  if (o.kind === 'symbol') return null;
+  if (o.kind === 'symbol' || o.kind === 'note') return null;
   const lib = LIB_MAP[o.type];
   const txt = o.kind === 'circle'
     ? `⌀ ${fmtM(o.w)}`

@@ -11,6 +11,7 @@ interface AppState {
   selectedId: string | null;
   snap: boolean;
   showDims: boolean;
+  sketchMode: boolean;
   showLayers: { planting: boolean; hard: boolean; utilities: boolean };
   draftPoints: number[];        // in-progress polygon/line, world coords
   measure: number[] | null;     // [x1,y1,x2,y2] while measuring
@@ -23,6 +24,7 @@ interface AppState {
   select: (id: string | null) => void;
   setSnap: (v: boolean) => void;
   toggleDims: () => void;
+  toggleSketch: () => void;
   toggleLayer: (k: keyof AppState['showLayers']) => void;
   setDraftPoints: (pts: number[]) => void;
   setMeasure: (m: number[] | null) => void;
@@ -53,6 +55,7 @@ export const useStore = create<AppState>()((set, get) => ({
   selectedId: null,
   snap: true,
   showDims: false,
+  sketchMode: false,
   showLayers: { planting: true, hard: true, utilities: true },
   draftPoints: [],
   measure: null,
@@ -65,6 +68,8 @@ export const useStore = create<AppState>()((set, get) => ({
   select: id => set({ selectedId: id }),
   setSnap: v => set({ snap: v }),
   toggleDims: () => set(s => ({ showDims: !s.showDims })),
+  // sketch mode implies dimensions on; leaving it restores normal colours
+  toggleSketch: () => set(s => ({ sketchMode: !s.sketchMode, showDims: !s.sketchMode ? true : s.showDims })),
   toggleLayer: k => set(s => ({ showLayers: { ...s.showLayers, [k]: !s.showLayers[k] } })),
   setDraftPoints: pts => set({ draftPoints: pts }),
   setMeasure: m => set({ measure: m }),

@@ -54,6 +54,13 @@ export function Palette() {
             <button className={`pal-item ${tool === 'boundary' ? 'active' : ''}`} onClick={() => setTool('boundary')}>
               <span className="pal-icon">🧭</span><span>Edit boundary</span>
             </button>
+            <button className="pal-item" onClick={() => {
+              if (!design) return;
+              const id = addObject({ type: 'note', kind: 'note', x: design.widthM / 2, y: design.heightM / 2, w: 0, h: 0, rotation: 0, label: '' });
+              select(id); setTool('select');
+            }}>
+              <span className="pal-icon">📝</span><span>Note</span>
+            </button>
             {(tool === 'polygon' || tool === 'line') && (
               <div className="hint">Tap to add points · double-tap or Enter to finish · Esc to cancel</div>
             )}

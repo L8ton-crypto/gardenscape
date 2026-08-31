@@ -13,21 +13,27 @@ export function PropertiesPanel() {
 
   const lib = LIB_MAP[o.type];
   const isLine = o.kind === 'line';
-  const isPoly = o.kind === 'polygon';
+  const isPoly = o.kind === 'polygon' || o.kind === 'note';
+  const isNote = o.kind === 'note';
 
   return (
     <div className="props">
       <div className="props-head">
-        <strong>{o.label ?? lib?.name ?? LINE_STYLES[o.type]?.name ?? 'Object'}</strong>
+        <strong>{isNote ? 'Note' : (o.label ?? lib?.name ?? LINE_STYLES[o.type]?.name ?? 'Object')}</strong>
         <div className="props-actions">
           <button title="Duplicate (Ctrl+D)" onClick={() => duplicateObject(o.id)}>⧉</button>
           <button title="Delete" className="danger" onClick={() => removeObject(o.id)}>🗑</button>
         </div>
       </div>
 
-      <label>Label
-        <input type="text" value={o.label ?? ''} placeholder={lib?.name ?? ''}
-          onChange={e => updateObject(o.id, { label: e.target.value })} />
+      <label>{isNote ? 'Note text' : 'Label'}
+        {isNote ? (
+          <textarea rows={3} value={o.label ?? ''} placeholder="e.g. existing drain here" autoFocus
+            onChange={e => updateObject(o.id, { label: e.target.value })} />
+        ) : (
+          <input type="text" value={o.label ?? ''} placeholder={lib?.name ?? ''}
+            onChange={e => updateObject(o.id, { label: e.target.value })} />
+        )}
       </label>
 
       {!isLine && !isPoly && (
@@ -66,7 +72,7 @@ export function PropertiesPanel() {
         </label>
       )}
 
-      {(o.kind === 'rect' || isPoly) && (
+      {(o.kind === 'rect' || o.kind === 'polygon') && (
         <label>Level (m) <span className="muted">e.g. -0.45, blank = ground</span>
           <input type="number" step={0.05} value={o.level ?? ''}
             placeholder="0.00"
@@ -74,7 +80,7 @@ export function PropertiesPanel() {
         </label>
       )}
 
-      {!isLine && o.kind !== 'symbol' && (
+      {!isLine && o.kind !== 'symbol' && !isNote && (
         <div className="swatches">
           {PASTELS.map(p => (
             <button key={p.v} title={p.name} className={`swatch ${o.color === p.v ? 'active' : ''}`}
