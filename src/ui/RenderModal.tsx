@@ -14,9 +14,15 @@ const PRESETS = [
 function houseEdge(d: Design): string {
   const house = d.objects.find(o => o.type === 'house' || o.type === 'extension');
   if (!house) return 'bottom'; // no house drawn — assume it sits below the plan
+  let hx = house.x, hy = house.y;
+  if (house.kind === 'line' && house.points?.length) {
+    hx = 0; hy = 0;
+    for (let i = 0; i < house.points.length; i += 2) { hx += house.points[i]; hy += house.points[i + 1]; }
+    hx /= house.points.length / 2; hy /= house.points.length / 2;
+  }
   const dists: [string, number][] = [
-    ['top', house.y], ['bottom', d.heightM - house.y],
-    ['left', house.x], ['right', d.widthM - house.x],
+    ['top', hy], ['bottom', d.heightM - hy],
+    ['left', hx], ['right', d.widthM - hx],
   ];
   dists.sort((a, b) => a[1] - b[1]);
   return dists[0][0];
@@ -111,7 +117,7 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
       <div className="modal render-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
           <h3>✨ 3D render</h3>
-          <button onClick={onClose}>✕</button>
+          <button onClick={onClose}>✕ Close</button>
         </div>
         <div className="render-presets">
           {PRESETS.map(p => (

@@ -37,11 +37,12 @@ input { font: inherit; }
   flex-wrap: wrap;
 }
 .tb-btn {
-  min-width: 40px; height: 40px; border-radius: 10px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 17px; background: rgba(255,255,255,0.08); color: #f3efe5;
+  min-width: 46px; height: 46px; border-radius: 10px; padding: 3px 6px 2px;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+  font-size: 16px; line-height: 1.15; background: rgba(255,255,255,0.08); color: #f3efe5;
   transition: background 0.12s;
 }
+.tb-btn small { font-size: 9px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; opacity: 0.85; }
 .tb-btn:hover { background: rgba(255,255,255,0.18); }
 .tb-btn.active { background: #f3efe5; color: var(--green); }
 .tb-btn:disabled { opacity: 0.35; cursor: default; }
@@ -149,7 +150,11 @@ input { font: inherit; }
 }
 .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .modal-head h3 { font-family: 'Fraunces', Georgia, serif; color: var(--green); font-size: 19px; }
-.modal-head button { width: 34px; height: 34px; border-radius: 9px; background: var(--paper); }
+.modal-head button {
+  min-width: 40px; height: 40px; padding: 0 14px; border-radius: 999px;
+  background: var(--ink); color: #f3efe5; font-size: 15px; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 .mat-table { width: 100%; border-collapse: collapse; }
 .mat-table td { padding: 9px 8px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
 .mat-item { font-weight: 700; white-space: nowrap; }

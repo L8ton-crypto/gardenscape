@@ -60,7 +60,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
 
   return (
     <div className="toolbar">
-      <button className="tb-btn brand" onClick={onHome} title="My designs">🌿</button>
+      <button className="tb-btn brand" onClick={onHome} title="My designs"><span>🌿</span><small>Home</small></button>
       {!viewOnly && (
         <input className="tb-name" value={design.name}
           onChange={e => commit(d => { d.name = e.target.value; })} />
@@ -70,31 +70,31 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
       {!viewOnly && (
         <>
           <div className="tb-group">
-            <button className={`tb-btn ${tool === 'select' ? 'active' : ''}`} onClick={() => setTool('select')} title="Select / move">➤</button>
-            <button className={`tb-btn ${tool === 'measure' ? 'active' : ''}`} onClick={() => setTool(tool === 'measure' ? 'select' : 'measure')} title="Tape measure">📏</button>
+            <button className={`tb-btn ${tool === 'select' ? 'active' : ''}`} onClick={() => setTool('select')} title="Select / move"><span>➤</span><small>Select</small></button>
+            <button className={`tb-btn ${tool === 'measure' ? 'active' : ''}`} onClick={() => setTool(tool === 'measure' ? 'select' : 'measure')} title="Tape measure"><span>📏</span><small>Measure</small></button>
           </div>
           <div className="tb-group">
-            <button className="tb-btn" disabled={!canUndo} onClick={undo} title="Undo (Ctrl+Z)">↶</button>
-            <button className="tb-btn" disabled={!canRedo} onClick={redo} title="Redo (Ctrl+Y)">↷</button>
+            <button className="tb-btn" disabled={!canUndo} onClick={undo} title="Undo (Ctrl+Z)"><span>↶</span><small>Undo</small></button>
+            <button className="tb-btn" disabled={!canRedo} onClick={redo} title="Redo (Ctrl+Y)"><span>↷</span><small>Redo</small></button>
           </div>
-          <button className={`tb-btn ${snap ? 'active' : ''}`} onClick={() => setSnap(!snap)} title="Snap to grid">🧲</button>
+          <button className={`tb-btn ${snap ? 'active' : ''}`} onClick={() => setSnap(!snap)} title="Snap to grid"><span>🧲</span><small>Snap</small></button>
         </>
       )}
-      <button className={`tb-btn ${showDims ? 'active' : ''}`} onClick={toggleDims} title="Show all measurements">📐</button>
-      <button className={`tb-btn ${sketchMode ? 'active' : ''}`} onClick={toggleSketch} title="Sketch view (schematic)">✏️</button>
-      <button className="tb-btn" onClick={() => setShowRender(true)} title="3D render (AI)">✨</button>
+      <button className={`tb-btn ${showDims ? 'active' : ''}`} onClick={toggleDims} title="Show all measurements"><span>📐</span><small>Sizes</small></button>
+      <button className={`tb-btn ${sketchMode ? 'active' : ''}`} onClick={toggleSketch} title="Sketch view (schematic)"><span>✏️</span><small>Sketch</small></button>
+      <button className="tb-btn" onClick={() => setShowRender(true)} title="3D render (AI)"><span>✨</span><small>3D</small></button>
 
       <div className="tb-group">
-        <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1.2 }))} title="Zoom in">＋</button>
-        <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1 / 1.2 }))} title="Zoom out">－</button>
-        <button className="tb-btn" onClick={() => window.dispatchEvent(new Event('gs:fit'))} title="Fit to screen">⛶</button>
+        <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1.2 }))} title="Zoom in"><span>＋</span><small>In</small></button>
+        <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1 / 1.2 }))} title="Zoom out"><span>－</span><small>Out</small></button>
+        <button className="tb-btn" onClick={() => window.dispatchEvent(new Event('gs:fit'))} title="Fit to screen"><span>⛶</span><small>Fit</small></button>
       </div>
 
       <div className="tb-spacer" />
       <TotalsStrip />
 
       <div className="tb-menu-wrap">
-        <button className="tb-btn" onClick={() => setMenuOpen(v => !v)} title="Menu">☰</button>
+        <button className="tb-btn" onClick={() => setMenuOpen(v => !v)} title="Menu"><span>☰</span><small>Menu</small></button>
         {menuOpen && (
           <div className="tb-menu" onClick={() => setMenuOpen(false)}>
             {!viewOnly && <button onClick={share}>🔗 Copy view-only link</button>}
@@ -148,7 +148,7 @@ function MaterialsModal({ onClose }: { onClose: () => void }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
           <h3>🧮 Materials estimate</h3>
-          <button onClick={onClose}>✕</button>
+          <button onClick={onClose}>✕ Close</button>
         </div>
         {lines.length === 0 ? (
           <p className="modal-empty">Nothing to estimate yet — add surfaces, fences, walls or beds to the plan.</p>

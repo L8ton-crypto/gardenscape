@@ -59,6 +59,7 @@ export const LIBRARY: LibraryItem[] = [
 export const LIB_MAP = Object.fromEntries(LIBRARY.map(i => [i.type, i]));
 
 export const LINE_STYLES: Record<string, { name: string; stroke: string; width: number; dash?: number[]; double?: boolean; emoji: string }> = {
+  house:  { name: 'House edge', stroke: '#3a362f', width: 0.3, emoji: '🏠' },
   fence:  { name: 'Fence',  stroke: '#8d6b43', width: 0.08, dash: [0.4, 0.15], emoji: '🚧' },
   wall:   { name: 'Wall',   stroke: '#6e6a60', width: 0.22, double: true, emoji: '🧱' },
   path:   { name: 'Path',   stroke: '#c9bd9c', width: 0.9, emoji: '👣' },

@@ -42,7 +42,7 @@ export type Tool =
   | 'measure'
   | 'boundary'; // edit boundary vertices
 
-export type LineType = 'fence' | 'wall' | 'path' | 'hedge' | 'edging';
+export type LineType = 'fence' | 'wall' | 'path' | 'hedge' | 'edging' | 'house';
 
 export const PASTELS = [
   { name: 'Sage', v: '#c8d8b9' },
