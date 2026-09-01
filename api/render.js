@@ -14,7 +14,8 @@ const STYLE =
   'No people, no text, no labels, no watermarks. High quality landscape-architect visualisation.';
 
 // Best-effort abuse guards (per warm instance): burst limit per IP + daily spend cap.
-const RATE_MAX = 6;            // renders per IP per hour
+const RATE_MAX = 5;            // renders per IP per day
+const RATE_WINDOW = 86_400_000;
 const DAILY_MAX = 150;         // renders per day across the app (~£5/day worst case)
 const ipHits = new Map();
 let dayKey = '';
@@ -31,8 +32,8 @@ export default async function handler(req, res) {
 
   const ip = (req.headers['x-forwarded-for'] || 'unknown').toString().split(',')[0].trim();
   const now = Date.now();
-  const hits = (ipHits.get(ip) || []).filter(t => now - t < 3600_000);
-  if (hits.length >= RATE_MAX) return res.status(429).json({ error: 'Render limit reached — try again in a while.' });
+  const hits = (ipHits.get(ip) || []).filter(t => now - t < RATE_WINDOW);
+  if (hits.length >= RATE_MAX) return res.status(429).json({ error: 'Daily render limit reached (5 per day) — try again tomorrow.' });
 
   const { image, preset, summary } = req.body || {};
   const presetText = PRESETS[preset];
