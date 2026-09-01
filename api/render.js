@@ -1,10 +1,18 @@
 // POST /api/render — turns a Gardenscape plan image into an AI 3D-style render.
 // The Gemini key lives only in the GEMINI_API_KEY env var, server-side.
 
+const DIMSTYLE =
+  'Present it as a professional landscape-architect isometric visualisation on a pure white background: ' +
+  'the plot rendered as a floating ground slab viewed from a high three-quarter angle, boundary walls/fences low and realistic. ' +
+  'Reproduce the measurement annotations from the plan as small cream-white rounded pill chips with terracotta text: ' +
+  'each structure and surface labelled with its real dimensions (e.g. "3m x 3m"), lawns and patios labelled with name and area (e.g. "Turf 32.2m²"), ' +
+  'overall plot width and depth shown along the outside edges with a metre ruler scale along the top edge, and a small north arrow in the top corner. ' +
+  'The chip values MUST exactly match the dimensions written on the plan.';
+
 const PRESETS = {
-  aerial: 'Render this garden as a photorealistic 3D aerial view, camera at roughly 45 degrees elevation looking across the plot',
+  aerial: `Render this garden as a photorealistic 3D visualisation. ${DIMSTYLE}`,
   eyelevel: 'Render this garden as a photorealistic eye-level photograph taken from the patio / seating area looking across the garden',
-  dusk: 'Render this garden as a photorealistic 3D aerial view at golden hour dusk, warm low sunlight, garden lights glowing',
+  dusk: `Render this garden as a photorealistic 3D isometric visualisation at golden-hour dusk with warm low sunlight and garden lights glowing. ${DIMSTYLE}`,
 };
 
 const STYLE =
