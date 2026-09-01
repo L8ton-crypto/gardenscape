@@ -4,6 +4,7 @@ import type { Design } from '../model/types';
 import { fmtM, objectArea, polylineLength } from '../model/types';
 import { LIB_MAP, LINE_STYLES } from '../model/library';
 import { getCachedRender, putCachedRender } from '../share/renderCache';
+import { saveFile } from '../share/download';
 
 const PRESETS = [
   { key: 'aerial', name: 'Aerial 3D', emoji: '🏞️' },
@@ -134,10 +135,7 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
           <div className="render-actions">
             {fromCache && <span className="render-cached">saved render — plot unchanged</span>}
             <button onClick={() => run(preset, true)}>🔄 Re-roll</button>
-            <button className="primary" onClick={() => {
-              const a = document.createElement('a');
-              a.href = img; a.download = `${design.name} - 3D render.png`; a.click();
-            }}>⬇ Download</button>
+            <button className="primary" onClick={() => saveFile(img, `${design.name} - 3D render.png`)}>⬇ Save image</button>
           </div>
         )}
         <p className="modal-foot">AI impression based on your plan — layout is respected, planting detail is artistic licence.</p>

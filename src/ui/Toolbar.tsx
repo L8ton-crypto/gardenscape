@@ -6,6 +6,7 @@ import { objectArea, polylineLength, fmtM2, fmtM } from '../model/types';
 import { LIB_MAP } from '../model/library';
 import { estimateMaterials } from '../model/materials';
 import { RenderModal } from './RenderModal';
+import { saveFile } from '../share/download';
 
 export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb: () => string | null }) {
   const design = useStore(s => s.design)!;
@@ -35,26 +36,19 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
     }
   };
 
-  const download = (dataUrl: string, name: string) => {
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = name;
-    a.click();
-  };
-
   const exportPng = () => {
     const url = stageThumb();
-    if (url) { download(url, `${design.name}.png`); flash('PNG exported'); }
+    if (url) { saveFile(url, `${design.name}.png`); flash('PNG exported'); }
   };
 
   const exportBuilder = () => {
-    download(renderBuilderPlan(design), `${design.name} - builders plan.png`);
+    saveFile(renderBuilderPlan(design), `${design.name} - builders plan.png`);
     flash("Builder's plan exported");
   };
 
   const exportJson = () => {
-    const blob = new Blob([JSON.stringify(design, null, 2)], { type: 'application/json' });
-    download(URL.createObjectURL(blob), `${design.name}.gardenscape.json`);
+    const dataUrl = `data:application/json;base64,${btoa(unescape(encodeURIComponent(JSON.stringify(design, null, 2))))}`;
+    saveFile(dataUrl, `${design.name}.gardenscape.json`);
     flash('Design JSON exported');
   };
 
