@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useStore } from '../state/store';
 import type { Design } from '../model/types';
 import { fmtM, objectArea, polylineLength } from '../model/types';
@@ -113,7 +114,7 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
 
   useEffect(() => { run('aerial'); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
+  return createPortal(
     <div className="modal-backdrop" onClick={() => !busy && onClose()}>
       <div className="modal render-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
@@ -140,6 +141,7 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
         )}
         <p className="modal-foot">AI impression based on your plan — layout is respected, planting detail is artistic licence.</p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

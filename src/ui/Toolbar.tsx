@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useStore } from '../state/store';
 import { encodeShareUrl } from '../share/encode';
 import { renderBuilderPlan } from '../share/builderExport';
@@ -137,7 +138,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
 function MaterialsModal({ onClose }: { onClose: () => void }) {
   const design = useStore(s => s.design)!;
   const lines = estimateMaterials(design);
-  return (
+  return createPortal(
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
@@ -161,7 +162,8 @@ function MaterialsModal({ onClose }: { onClose: () => void }) {
         )}
         <p className="modal-foot">Rough take-off for budgeting — always confirm quantities with your supplier.</p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
