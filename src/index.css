@@ -178,7 +178,8 @@ input { font: inherit; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .render-error { color: var(--danger); font-weight: 600; padding: 24px; font-size: 14px; }
-.render-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+.render-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; align-items: center; }
+.render-cached { font-size: 12px; font-weight: 600; opacity: 0.55; margin-right: auto; }
 .render-actions button { padding: 10px 16px; border-radius: 999px; font-weight: 700; background: var(--paper); }
 .render-actions .primary { background: var(--green); color: #fff; }
 

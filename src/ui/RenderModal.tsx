@@ -3,6 +3,7 @@ import { useStore } from '../state/store';
 import type { Design } from '../model/types';
 import { fmtM, objectArea, polylineLength } from '../model/types';
 import { LIB_MAP, LINE_STYLES } from '../model/library';
+import { getCachedRender, putCachedRender } from '../share/renderCache';
 
 const PRESETS = [
   { key: 'aerial', name: 'Aerial 3D', emoji: '🏞️' },
@@ -61,9 +62,15 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [img, setImg] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [fromCache, setFromCache] = useState(false);
 
-  const run = async (p: string) => {
-    setBusy(true); setError(''); setPreset(p);
+  const run = async (p: string, force = false) => {
+    setError(''); setPreset(p); setFromCache(false);
+    if (!force) {
+      const cached = await getCachedRender(design, p);
+      if (cached) { setImg(cached); setFromCache(true); setBusy(false); return; }
+    }
+    setBusy(true);
     try {
       const plan = await capturePlan(containerEl);
       if (!plan) throw new Error('Could not capture the plan');
@@ -75,6 +82,7 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || `Render failed (${r.status})`);
       setImg(data.image);
+      putCachedRender(design, p, data.image);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -104,7 +112,8 @@ export function RenderModal({ onClose }: { onClose: () => void }) {
         </div>
         {!busy && img && !error && (
           <div className="render-actions">
-            <button onClick={() => run(preset)}>🔄 Re-roll</button>
+            {fromCache && <span className="render-cached">saved render — plot unchanged</span>}
+            <button onClick={() => run(preset, true)}>🔄 Re-roll</button>
             <button className="primary" onClick={() => {
               const a = document.createElement('a');
               a.href = img; a.download = `${design.name} - 3D render.png`; a.click();
