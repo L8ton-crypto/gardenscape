@@ -11,8 +11,22 @@ const PRESETS = [
   { key: 'dusk', name: 'Dusk', emoji: '🌇' },
 ];
 
+function houseEdge(d: Design): string {
+  const house = d.objects.find(o => o.type === 'house' || o.type === 'extension');
+  if (!house) return 'bottom'; // no house drawn — assume it sits below the plan
+  const dists: [string, number][] = [
+    ['top', house.y], ['bottom', d.heightM - house.y],
+    ['left', house.x], ['right', d.widthM - house.x],
+  ];
+  dists.sort((a, b) => a[1] - b[1]);
+  return dists[0][0];
+}
+
 function designSummary(d: Design): string {
-  const parts = [`Plot ${fmtM(d.widthM)} x ${fmtM(d.heightM)}. North at ${d.northDeg} degrees.`];
+  const parts = [
+    `Plot ${fmtM(d.widthM)} x ${fmtM(d.heightM)}. North at ${d.northDeg} degrees.`,
+    `The house adjoins the garden along the ${houseEdge(d)} edge of the plan — render the garden attached to the house with part of its rear facade visible along that edge, not as a free-standing island plot`,
+  ];
   for (const o of d.objects) {
     const name = o.label || LIB_MAP[o.type]?.name || LINE_STYLES[o.type]?.name;
     if (!name || o.kind === 'note') continue;
