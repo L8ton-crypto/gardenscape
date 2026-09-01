@@ -5,6 +5,7 @@ import { renderBuilderPlan } from '../share/builderExport';
 import { objectArea, polylineLength, fmtM2, fmtM } from '../model/types';
 import { LIB_MAP } from '../model/library';
 import { estimateMaterials } from '../model/materials';
+import { RenderModal } from './RenderModal';
 
 export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb: () => string | null }) {
   const design = useStore(s => s.design)!;
@@ -20,6 +21,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
   const [toast, setToast] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [showMaterials, setShowMaterials] = useState(false);
+  const [showRender, setShowRender] = useState(false);
 
   const flash = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 2200); };
 
@@ -80,6 +82,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
       )}
       <button className={`tb-btn ${showDims ? 'active' : ''}`} onClick={toggleDims} title="Show all measurements">📐</button>
       <button className={`tb-btn ${sketchMode ? 'active' : ''}`} onClick={toggleSketch} title="Sketch view (schematic)">✏️</button>
+      <button className="tb-btn" onClick={() => setShowRender(true)} title="3D render (AI)">✨</button>
 
       <div className="tb-group">
         <button className="tb-btn" onClick={() => window.dispatchEvent(new CustomEvent('gs:zoom', { detail: 1.2 }))} title="Zoom in">＋</button>
@@ -132,6 +135,7 @@ export function Toolbar({ onHome, stageThumb }: { onHome: () => void; stageThumb
       </div>
       {toast && <div className="toast">{toast}</div>}
       {showMaterials && <MaterialsModal onClose={() => setShowMaterials(false)} />}
+      {showRender && <RenderModal onClose={() => setShowRender(false)} />}
     </div>
   );
 }

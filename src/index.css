@@ -158,6 +158,30 @@ input { font: inherit; }
 .modal-empty { opacity: 0.7; font-size: 14px; padding: 10px 0; }
 .modal-foot { margin-top: 12px; font-size: 11.5px; opacity: 0.55; }
 
+.render-modal { max-width: 640px; }
+.render-presets { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.render-presets button {
+  padding: 9px 14px; border-radius: 999px; background: var(--paper); font-weight: 700; font-size: 13.5px;
+}
+.render-presets button.active { background: var(--green); color: #fff; }
+.render-presets button:disabled { opacity: 0.5; }
+.render-stage {
+  min-height: 280px; background: var(--paper); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.render-stage img { width: 100%; height: auto; display: block; border-radius: 12px; }
+.render-busy { display: flex; align-items: center; gap: 10px; font-weight: 600; opacity: 0.75; padding: 30px; }
+.spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 3px solid var(--line); border-top-color: var(--green);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.render-error { color: var(--danger); font-weight: 600; padding: 24px; font-size: 14px; }
+.render-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+.render-actions button { padding: 10px 16px; border-radius: 999px; font-weight: 700; background: var(--paper); }
+.render-actions .primary { background: var(--green); color: #fff; }
+
 /* ---------- view-only ---------- */
 .viewonly-bar {
   position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
